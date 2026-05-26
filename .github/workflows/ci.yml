@@ -23,11 +23,9 @@ jobs:
         working-directory: MLProject
 
     steps:
-      #  1. Checkout repo 
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      #  2. Setup Miniconda 
       - name: Setup Miniconda
         uses: conda-incubator/setup-miniconda@v3
         with:
@@ -36,20 +34,10 @@ jobs:
           auto-activate-base: false
           auto-update-conda: true
 
-      #  3. Verifikasi environment 
-      - name: Verify environment
-        shell: bash -el {0}
-        run: |
-          conda info
-          python --version
-          pip list | grep -E "mlflow|scikit|pandas|numpy"
-
-      #  4. Jalankan training via MLflow run
-      - name: Install setuptools fix
+      - name: Fix pkg_resources
         shell: bash -el {0}
         run: pip install setuptools --upgrade
 
-      #  5. Jalankan training via MLflow run 
       - name: Run MLflow training
         shell: bash -el {0}
         run: |
@@ -57,3 +45,13 @@ jobs:
             --env-manager=local \
             -P test_size=0.2 \
             -P random_state=42
+
+      - name: Upload MLflow results
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlflow-results
+          path: |
+            MLProject/mlflow.db
+            MLProject/mlruns/
+            MLProject/model.pkl
+          retention-days: 7
