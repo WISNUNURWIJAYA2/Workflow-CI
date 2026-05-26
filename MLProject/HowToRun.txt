@@ -1,0 +1,16 @@
+"""
+modelling.py — MLflow Titanic Survival Prediction
+==================================================
+URUTAN MENJALANKAN:
+
+  Terminal 1 (biarkan tetap berjalan):
+    mlflow ui
+
+  Terminal 2 (jalankan training):
+    python modelling.py
+
+  Buka browser → http://127.0.0.1:5000
+
+  Atau via MLflow Projects:
+    mlflow run MLProject/ -P test_size=0.2 -P random_state=42
+"""

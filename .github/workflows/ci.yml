@@ -1,0 +1,65 @@
+name: CI - Titanic MLflow Training
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "MLProject/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "MLProject/**"
+  workflow_dispatch:
+
+jobs:
+  train:
+    name: Train Titanic Survival Model
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: MLProject
+
+    steps:
+      # ── 1. Checkout repo ──────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Setup Miniconda ────────────────────────────────────────
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: titanic-mlflow-env
+          environment-file: MLProject/conda.yaml
+          auto-activate-base: false
+          auto-update-conda: true
+
+      # ── 3. Verifikasi environment ─────────────────────────────────
+      - name: Verify environment
+        shell: bash -el {0}
+        run: |
+          conda info
+          python --version
+          pip list | grep -E "mlflow|scikit|pandas|numpy"
+
+      # ── 4. Jalankan training via MLflow run ───────────────────────
+      - name: Run MLflow training
+        shell: bash -el {0}
+        run: |
+          mlflow run . \
+            --env-manager=local \
+            -P test_size=0.2 \
+            -P random_state=42
+
+      # ── 5. Upload mlflow.db sebagai artifact ──────────────────────
+      - name: Upload MLflow database
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlflow-results
+          path: |
+            MLProject/mlflow.db
+            MLProject/mlruns/
+            MLProject/model.pkl
+          retention-days: 7
