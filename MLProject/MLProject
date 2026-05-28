@@ -1,12 +1,8 @@
-name: titanic-survival-prediction
+name: titanic-survival
 conda_env: conda.yaml
 entry_points:
-  main:
+  train:
     parameters:
-      test_size:
-        type: float
-        default: 0.2
-      random_state:
-        type: int
-        default: 42
-    command: "python modelling.py --test_size {test_size} --random_state {random_state}"
+      test_size: {type: float, default: 0.2}
+      random_state: {type: int, default: 42}
+    command: "python train.py --test-size {test_size} --random-state {random_state}"
