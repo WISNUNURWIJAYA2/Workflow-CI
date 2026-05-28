@@ -14,33 +14,22 @@ jobs:
     name: Train Titanic Survival Model
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: MLProject
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v3
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          activate-environment: titanic-mlflow-env
-          environment-file: MLProject/conda.yaml
-          auto-activate-base: false
-          auto-update-conda: true
+          python-version: "3.10"
 
-      - name: Fix pkg_resources
-        shell: bash -el {0}
-        run: pip install setuptools --upgrade
-
-      - name: Run MLflow training
-        shell: bash -el {0}
+      - name: Install dependencies
         run: |
-          mlflow run . \
-            --env-manager=local \
-            -P test_size=0.2 \
-            -P random_state=42
+          pip install setuptools mlflow==2.13.0 scikit-learn==1.4.2 pandas==2.2.2 numpy==1.26.4 joblib==1.4.2
+
+      - name: Run training
+        working-directory: MLProject
+        run: python modelling.py
 
       - name: Upload MLflow results
         uses: actions/upload-artifact@v4
