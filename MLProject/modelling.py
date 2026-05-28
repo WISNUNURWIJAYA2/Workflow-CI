@@ -64,7 +64,7 @@ def encode_if_needed(df):
 def train_model(X_train, X_test, y_train, y_test,
                 model, model_name, feature_names):
 
-    with mlflow.start_run(run_name=model_name):
+    with mlflow.start_run(run_name=model_name, nested=True):
 
         mlflow.sklearn.autolog(
             log_input_examples   = False,
